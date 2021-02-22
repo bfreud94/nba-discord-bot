@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2020": true,
+        "mocha": true
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "comma-dangle": ["error", "never"],
+        "eol-last": 0,
+        "indent": ["error", 4],
+        "import/newline-after-import": "off",
+        "linebreak-style": 0,
+        "max-len": ["error", 175],
+        "no-plusplus": 0,
+        "no-underscore-dangle": 0,
+        "object-curly-newline": 0
+    }
+}
