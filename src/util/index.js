@@ -16,7 +16,10 @@ export const createHTMLImage = async (htmlTemplate) => (
         quality: 100,
         type: 'jpeg',
         puppeteerArgs: {
-            args: ['--no-sandbox'],
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox'
+            ],
         },
         encoding: 'buffer'
     })
