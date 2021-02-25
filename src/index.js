@@ -1,37 +1,38 @@
 // Dotenv config
 require('dotenv').config();
 
-const { Client } = require('discord.js');
+// External Dependencies
+import { Client } from 'discord.js';
+import { missingPlayerNameArguments } from './errors';
+import { basicStats } from './players/players';
+import { getFullName, parseMessageContent } from './util';
+
+// Global Constants
 const client = new Client();
 const prefix = process.env.PREFIX;
 
+// Login
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-client.on('ready', () => {
-    console.log(`${client.user.tag} has logged in!`);
-});
-
-client.on('message', (message) => {
+// Listening for messages
+client.on('message', async (message) => {
     if (message.author.bot || !message.content.startsWith(prefix)) return;
 
-    // Spread operator here destructures the first element with a variable name
-    // Every element after that is stored inside the args variable, which is an array
-    // Unpacks all elements into args variable
-    // Regex in split argument gets rid of extraneous whitespace between arguments
-    const [CMD_NAME, ...args] = message.content
-        .trim()
-        .substring(prefix.length)
-        .split(/\s+/);
-    if (message.content === '!test') {
-        // Replies to user (tags them)
-        message.reply('received response!');
+    const [CMD_NAME, ...args] = parseMessageContent(message, process.env.PREFIX);
 
-        // Sends message to channel
-        // If line 14 was not there, it would cause an infinite loop because the message triggers this callback function
-        message.channel.send('Hello sending message');
+    if (CMD_NAME === 'basicStats') {
+        const [firstName, lastName] = args;
+        if (!firstName || !lastName) {
+            message.channel.send(missingPlayerNameArguments);
+            return;
+        }
+        const playerName = getFullName(firstName, lastName).toLowerCase();
+        const playerStats = await basicStats(playerName);
+        message.channel.send(playerStats);
     }
 });
 
+// Listening for reactions
 client.on('messageReactionAdd', (reaction) => {
     const { name } = reaction.emoji;
     switch (name) {
