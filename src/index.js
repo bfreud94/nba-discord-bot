@@ -36,7 +36,7 @@ client.on('message', async (message) => {
             break;
         default:
             break;
-    }
+    };
 });
 
 // Listening for reactions
