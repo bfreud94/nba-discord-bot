@@ -3,9 +3,11 @@ require('dotenv').config();
 
 // External Dependencies
 import { Client } from 'discord.js';
-import { missingPlayerNameArguments } from './errors';
-import { basicStats } from './players/players';
-import { getFullName, parseMessageContent } from './util';
+import playerStats from './playersData/playerStats';
+import { missingPlayerName, parseMessageContent } from './util';
+
+// Internal Dependencies
+import commands from './commands';
 
 // Global Constants
 const client = new Client();
@@ -20,15 +22,20 @@ client.on('message', async (message) => {
 
     const [CMD_NAME, ...args] = parseMessageContent(message, process.env.PREFIX);
 
-    if (CMD_NAME === 'basicStats') {
-        const [firstName, lastName] = args;
-        if (!firstName || !lastName) {
-            message.channel.send(missingPlayerNameArguments);
-            return;
-        }
-        const playerName = getFullName(firstName, lastName).toLowerCase();
-        const playerStats = await basicStats(playerName);
-        message.channel.send(playerStats);
+    if (!Object.keys(commands).includes(CMD_NAME)) return;
+
+    switch(CMD_NAME) {
+        case 'advancedStats':
+        case 'basicStats':
+            if (missingPlayerName(args)) {
+                message.channel.send(data);
+            } else {
+                const data = await playerStats(args, CMD_NAME);
+                message.channel.send(data);
+            }
+            break;
+        default:
+            break;
     }
 });
 

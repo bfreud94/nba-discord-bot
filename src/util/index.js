@@ -8,8 +8,6 @@ export const parseMessageContent = (message, prefix) => message.content
 
 export const getFullName = (firstName, lastName) => `${firstName} ${lastName}`;
 
-export const basicStatsTableHeaders = ['PPG', 'RPG', 'APG', 'SPG', 'BPG'];
-
 export const createHTMLImage = async (htmlTemplate) => (
     await nodeHtmlToImage({
         html: htmlTemplate,
@@ -24,3 +22,9 @@ export const createHTMLImage = async (htmlTemplate) => (
         encoding: 'buffer'
     })
 );
+
+export const missingPlayerName = ([firstName, lastName]) => { 
+    if (!firstName || !lastName) {
+        return missingPlayerNameArguments;
+    }
+};
