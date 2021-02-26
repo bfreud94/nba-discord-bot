@@ -1,24 +1,25 @@
+import { getRowName } from '../util';
 import styles from './styles';
 
-const getRows = (values) => {
+const getRows = (values, statType) => {
     let rowsHTML = '';
     values.map((value) => {
-        rowsHTML += `<th class='tableRow'>${value === 'PLUSMINUS' ? '+/-' : value}</th>`
+        rowsHTML += `<th class='tableRow'>${getRowName(value, statType)}</th>`;
     });
     return rowsHTML;
 };
 
 const metaTags = () => (
-    `<meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />`
+    `<meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta http-equiv='X-UA-Compatible' content='ie=edge' />`
 );
 
-export default (headers, values, playerName) => {
-    const headersHTML = getRows(headers);
-    const rowsHTML = getRows(values);
+export default (headers, values, playerName, statType) => {
+    const headersHTML = getRows(headers, statType);
+    const rowsHTML = getRows(values, statType);
     return `<!DOCTYPE html>
-        <html lang="en">
+        <html lang='en'>
             <head>
                 ${metaTags()}
                 <style>

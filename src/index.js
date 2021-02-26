@@ -27,6 +27,8 @@ client.on('message', async (message) => {
     switch(CMD_NAME) {
         case 'advancedStats':
         case 'basicStats':
+        case 'basicTotalStats':
+        case 'basicTotalStats2':
             if (missingPlayerName(args)) {
                 message.channel.send(data);
             } else {

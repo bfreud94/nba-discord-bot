@@ -26,7 +26,7 @@ const playerStats = async ([ firstName, lastName], statType) => {
             const statsList = commands[statType];
             const stats = statsList.map((stat) => playerStats.league.standard.stats.regularSeason.season[0].total[stat]);
 
-            const _htmlTemplate = htmlTemplate(statsList.map((stat) => stat.toUpperCase()), stats, fullName);
+            const _htmlTemplate = htmlTemplate(statsList, stats, fullName, statType);
             const images = await createHTMLImage(_htmlTemplate);
 
             return new MessageAttachment(images, 'anything.jpg');
