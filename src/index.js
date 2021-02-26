@@ -36,6 +36,9 @@ client.on('message', async (message) => {
                 message.channel.send(data);
             }
             break;
+        case 'help':
+            message.channel.send(commands.help());
+            break;
         default:
             break;
     };
