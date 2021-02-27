@@ -31,12 +31,18 @@ const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
         const fullName = getFullName(firstName, lastName);
 
         if (playerName === fullName.toLowerCase()) {
-            const playerStats = await (await fetch(specificPlayer(personId))).json();
-            const playerSeasons = playerStats.league.standard.stats.regularSeason.season;
+            const playerStatsResponse = await (await fetch(specificPlayer(personId))).json();
+
+            const playerSeasonStats = playerStatsResponse.league.standard.stats.regularSeason.season;
 
             const statsList = statsMap[CMD_NAME];
-            const yearIndex = getYear(year, playerSeasons.length);
-            const stats = statsList.map((stat) => playerSeasons[yearIndex].total[stat]);
+            const yearIndex = getYear(year, playerSeasonStats.length);
+
+            const stats = statsList.map((stat) => (
+                year === 'career'
+                    ? playerStatsResponse.league.standard.stats.careerSummary[stat]
+                    : playerSeasonStats[yearIndex].total[stat]
+            ));
 
             const _htmlTemplate = htmlTemplate(statsList, stats, fullName, CMD_NAME);
             const images = await createHTMLImage(_htmlTemplate);
@@ -47,6 +53,6 @@ const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
         }
     }
     return playerNotFound;
-}
+};
 
 export default playerStats;
