@@ -3,11 +3,12 @@ require('dotenv').config();
 
 // External Dependencies
 import { Client } from 'discord.js';
-import playerStats from './playersData/playerStats';
-import { missingPlayerName, parseMessageContent } from './util';
+import { connect } from 'mongoose';
 
 // Internal Dependencies
-import commands from './commands';
+import { includesCommand } from './util/commands';
+import commands from './commands/index';
+import { missingPlayerName, parseMessageContent } from './util';
 
 // Global Constants
 const client = new Client();
@@ -22,23 +23,35 @@ client.on('message', async (message) => {
 
     const [CMD_NAME, ...args] = parseMessageContent(message, process.env.PREFIX);
 
-    if (!Object.keys(commands).includes(CMD_NAME)) return;
+    if (!includesCommand(CMD_NAME)) return;
+
+    const { help, playerStats, usage } = commands;
 
     switch(CMD_NAME) {
         case 'advancedStats':
         case 'basicStats':
         case 'basicTotalStats':
-        case 'basicTotalStats2':
+        case 'basicTotalStats2': {
             if (missingPlayerName(args)) {
+                // ????
+                // fix this!
                 message.channel.send(data);
             } else {
                 const data = await playerStats(args, CMD_NAME);
                 message.channel.send(data);
             }
             break;
-        case 'help':
-            message.channel.send(commands.help());
+        };
+        case 'help': {
+            const data = help();
+            message.channel.send(data);
             break;
+        };
+        case 'usage': {
+            const data = await usage();
+            message.channel.send(data);
+            break;
+        };
         default:
             break;
     };
@@ -61,4 +74,10 @@ client.on('messageReactionAdd', (reaction) => {
             console.log('do something');
             break;
     }
+});
+
+// Connecting to the Database
+connect(`${process.env.DB_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, connection) => {
+    // eslint-disable-next-line no-console
+    console.log('Connected to Database');
 });
