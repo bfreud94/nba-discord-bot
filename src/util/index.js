@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import nodeHtmlToImage from 'node-html-to-image';
 
 export const parseMessageContent = (message, prefix) => message.content
     .trim()
@@ -7,21 +6,6 @@ export const parseMessageContent = (message, prefix) => message.content
     .split(/\s+/);
 
 export const getFullName = (firstName, lastName) => `${firstName} ${lastName}`;
-
-export const createHTMLImage = async (htmlTemplate) => (
-    await nodeHtmlToImage({
-        html: htmlTemplate,
-        quality: 100,
-        type: 'jpeg',
-        puppeteerArgs: {
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
-            ],
-        },
-        encoding: 'buffer'
-    })
-);
 
 export const missingPlayerName = ([firstName, lastName]) => !firstName || !lastName;
 

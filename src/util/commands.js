@@ -1,12 +1,13 @@
 import Commands from '../models/commands';
 
 export const commandArgsMap = {
-    basicStats: 'firstName lastName year',
-    advancedStats: 'firstName lastName year',
-    basicTotalStats: 'firstName lastName year',
-    basicTotalStats2: 'firstName lastName year',
+    basicStats: 'firstName lastName timeframe',
+    advancedStats: 'firstName lastName timeframe',
+    basicTotalStats: 'firstName lastName timeframe',
+    basicTotalStats2: 'firstName lastName timeframe',
     help: '',
-    usage: ''
+    usage: '',
+    compare: 'playerOneFirstName playerOneLastName playerTwoFirstName playerTwoLastName playerOneTimeFrame playerTwoTimeFrame'
 };
 
 export const incrementCommand = async (name) => {

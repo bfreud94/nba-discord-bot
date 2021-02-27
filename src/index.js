@@ -18,7 +18,7 @@ client.on('message', async (message) => {
 
     const [CMD_NAME, ...args] = parseMessageContent(message, process.env.PREFIX);
 
-    const { help, playerStats, usage } = commands;
+    const { compare, help, playerStatsImage, usage } = commands;
 
     switch(CMD_NAME) {
         case 'advancedStats':
@@ -29,7 +29,7 @@ client.on('message', async (message) => {
                 const data = missingPlayerNameArguments;
                 message.channel.send(data);
             } else {
-                const data = await playerStats(args, CMD_NAME);
+                const data = await playerStatsImage(args, CMD_NAME);
                 message.channel.send(data);
             }
             break;
@@ -44,6 +44,11 @@ client.on('message', async (message) => {
             message.channel.send(data);
             break;
         };
+        case 'compare': {
+            const data = await compare(args, CMD_NAME);
+            message.channel.send(data);
+            break;
+        }
         default:
             message.channel.send(invalidCommand);
             break;

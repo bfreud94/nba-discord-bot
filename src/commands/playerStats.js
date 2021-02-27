@@ -1,11 +1,11 @@
 import fetch from 'node-fetch';
 import { MessageAttachment } from 'discord.js';
 
-import htmlTemplate from '../templates/htmlTemplate';
 import { playerNotFound } from '../errors';
 import { allPlayers, specificPlayer } from '../apis';
-import { createHTMLImage, getFullName } from '../util';
+import { getFullName } from '../util';
 import { incrementCommand } from '../util/commands';
+import { onePlayerHTMLTemplate } from '../templates/htmlTemplate';
 
 export const statsMap = {
     basicStats: ['mpg', 'ppg', 'rpg', 'apg', 'spg', 'bpg'],
@@ -19,7 +19,7 @@ const getYear = (year, max) => {
     return 2020 - year >= 0 ? 2020 - year : 0;
 };
 
-const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
+export const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
     const playerName = getFullName(firstName, lastName).toLowerCase();
 
     const allPlayersResponse = await (await fetch(allPlayers)).json();
@@ -35,24 +35,28 @@ const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
 
             const playerSeasonStats = playerStatsResponse.league.standard.stats.regularSeason.season;
 
-            const statsList = statsMap[CMD_NAME];
+            const statNames = statsMap[CMD_NAME];
             const yearIndex = getYear(year, playerSeasonStats.length);
 
-            const stats = statsList.map((stat) => (
+            const stats = statNames.map((stat) => (
                 year === 'career'
                     ? playerStatsResponse.league.standard.stats.careerSummary[stat]
                     : playerSeasonStats[yearIndex].total[stat]
             ));
-
-            const _htmlTemplate = htmlTemplate(statsList, stats, fullName, CMD_NAME);
-            const images = await createHTMLImage(_htmlTemplate);
-
-            await incrementCommand(CMD_NAME);
-
-            return new MessageAttachment(images, 'anything.jpg');
+            return {
+                fullName,
+                stats,
+                statNames
+            };
         }
     }
     return playerNotFound;
 };
 
-export default playerStats;
+export const playerStatsImage = async ([firstName, lastName, year], CMD_NAME) => {
+    const { fullName, statNames, stats } = await playerStats([firstName, lastName, year], CMD_NAME);
+    if (playerStats === playerNotFound) return playerNotFound;
+    const images = await onePlayerHTMLTemplate(statNames, stats, fullName, CMD_NAME);
+    await incrementCommand(CMD_NAME);
+    return new MessageAttachment(images, 'anything.jpg');
+};

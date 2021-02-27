@@ -1,9 +1,11 @@
+import compare from './compare';
 import { help } from './help';
-import playerStats from './playerStats';
+import { playerStatsImage } from './playerStats';
 import { usage } from './usage';
 
 export default {
+    compare,
     help,
-    playerStats,
+    playerStatsImage,
     usage
 };
