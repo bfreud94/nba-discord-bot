@@ -16,7 +16,7 @@ const metaTags = () => (
     <meta http-equiv='X-UA-Compatible' content='ie=edge' />`
 );
 
-export const onePlayerHTMLTemplate = async (headers, values, playerName, statType) => {
+export const onePlayerHTMLTemplate = async (headers, values, playerName, statType, year) => {
     const headersHTML = getRows(headers, statType);
     const rowsHTML = getRows(values, statType);
     const _htmlTemplate = 
@@ -30,7 +30,7 @@ export const onePlayerHTMLTemplate = async (headers, values, playerName, statTyp
             </head>
             <body>
                 <div class='app'>
-                    <h4>${playerName}</h4>
+                    <h4>${playerName} (${year}-${parseInt(year) + 1})</h4>
                     <table>
                         <tr>${headersHTML}</tr>
                         <tr>${rowsHTML}</tr>
@@ -53,10 +53,12 @@ export const onePlayerHTMLTemplate = async (headers, values, playerName, statTyp
     return image;
 };
 
-export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneName], [playerTwoStats, playerTwoName], statType) => {
+export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneName, playerOneTimeframe], [playerTwoStats, playerTwoName, playerTwoTimeframe], statType) => {
+    console.log(playerOneTimeframe)
     const headersHTML = getRows(headers, statType);
     const playerOneRows = getRows(playerOneStats, statType);
     const playerTwoRows = getRows(playerTwoStats, statType);
+    console.log(playerOneTimeframe)
     const _htmlTemplate = 
         `<!DOCTYPE html>
             <html lang='en'>
@@ -68,12 +70,12 @@ export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneN
                 </head>
                 <body>
                     <div class='app'>
-                        <h4>${playerOneName}</h4>
+                        <h4>${playerOneName} (${playerOneTimeframe}-${parseInt(playerOneTimeframe) + 1})</h4>
                         <table>
                             <tr>${headersHTML}</tr>
                             <tr>${playerOneRows}</tr>
                         </table>
-                        <h4>${playerTwoName}</h4>
+                        <h4>${playerTwoName} (${playerTwoTimeframe}-${parseInt(playerTwoTimeframe) + 1})</h4>
                         <table>
                             <tr>${headersHTML}</tr>
                             <tr>${playerTwoRows}</tr>

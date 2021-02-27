@@ -53,10 +53,10 @@ export const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
     return playerNotFound;
 };
 
-export const playerStatsImage = async ([firstName, lastName, year], CMD_NAME) => {
+export const playerStatsImage = async ([firstName, lastName, year = 2020], CMD_NAME) => {
     const { fullName, statNames, stats } = await playerStats([firstName, lastName, year], CMD_NAME);
     if (playerStats === playerNotFound) return playerNotFound;
-    const images = await onePlayerHTMLTemplate(statNames, stats, fullName, CMD_NAME);
+    const images = await onePlayerHTMLTemplate(statNames, stats, fullName, CMD_NAME, year);
     await incrementCommand(CMD_NAME);
     return new MessageAttachment(images, 'anything.jpg');
 };
