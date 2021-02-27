@@ -33,8 +33,7 @@ client.on('message', async (message) => {
         case 'basicTotalStats':
         case 'basicTotalStats2': {
             if (missingPlayerName(args)) {
-                // ????
-                // fix this!
+                // TODO: fix this!
                 message.channel.send(data);
             } else {
                 const data = await playerStats(args, CMD_NAME);
@@ -43,12 +42,12 @@ client.on('message', async (message) => {
             break;
         };
         case 'help': {
-            const data = help();
+            const data = await help();
             message.channel.send(data);
             break;
         };
         case 'usage': {
-            const data = await usage();
+            const data = await usage(CMD_NAME);
             message.channel.send(data);
             break;
         };

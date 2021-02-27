@@ -1,14 +1,15 @@
+// TODO: remove?
+// Dotenv config
+require('dotenv').config();
+
 import Commands from '../models/commands';
+import { incrementCommand } from '../util/commands';
+import { connectionError } from '../errors/index';
 
-const incrementUsage = async () => {
-    const query = { name: 'usage' };
-    await Commands.findOneAndUpdate(query, {$inc : {'invocations' : 1}}, { useFindAndModify: false });
-};
-
-export const usage = async () => {
+export const usage = async (CMD_NAME) => {
     try {
         let usage = `Total Usage for all commands:\n\n`;
-        await incrementUsage();
+        await incrementCommand(CMD_NAME);
         const commands = await Commands.find({});
         commands.forEach(({ invocations, name }) => {
             usage += `${name}: ${invocations}\n`;
