@@ -1,9 +1,9 @@
-import { helpMessage } from './help';
+import { help } from './help';
 import playerStats from './playerStats';
 import { usage } from './usage';
 
 export default {
-    help: helpMessage,
+    help,
     playerStats,
     usage
 };

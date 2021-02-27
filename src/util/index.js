@@ -1,4 +1,3 @@
-// External dependencies
 import _ from 'lodash';
 import nodeHtmlToImage from 'node-html-to-image';
 
@@ -24,11 +23,7 @@ export const createHTMLImage = async (htmlTemplate) => (
     })
 );
 
-export const missingPlayerName = ([firstName, lastName]) => { 
-    if (!firstName || !lastName) {
-        return missingPlayerNameArguments;
-    }
-};
+export const missingPlayerName = ([firstName, lastName]) => !firstName || !lastName;
 
 export const getRowName = (rowHeader, statType) => {
     if (rowHeader === 'plusMinus') return '+/-';

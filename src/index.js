@@ -1,23 +1,19 @@
 // Dotenv config
 require('dotenv').config();
 
-// External Dependencies
 import { Client } from 'discord.js';
 import { connect } from 'mongoose';
 
-// Internal Dependencies
 import { includesCommand } from './util/commands';
 import commands from './commands/index';
 import { missingPlayerName, parseMessageContent } from './util';
+import { missingPlayerNameArguments } from './errors/index';
 
-// Global Constants
 const client = new Client();
 const prefix = process.env.PREFIX;
 
-// Login
 client.login(process.env.DISCORD_BOT_TOKEN);
 
-// Listening for messages
 client.on('message', async (message) => {
     if (message.author.bot || !message.content.startsWith(prefix)) return;
 
@@ -34,6 +30,7 @@ client.on('message', async (message) => {
         case 'basicTotalStats2': {
             if (missingPlayerName(args)) {
                 // TODO: fix this!
+                const data = missingPlayerNameArguments;
                 message.channel.send(data);
             } else {
                 const data = await playerStats(args, CMD_NAME);
@@ -42,7 +39,7 @@ client.on('message', async (message) => {
             break;
         };
         case 'help': {
-            const data = await help();
+            const data = await help(CMD_NAME);
             message.channel.send(data);
             break;
         };

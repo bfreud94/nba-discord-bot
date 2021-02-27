@@ -1,8 +1,6 @@
-// External dependencies
 import fetch from 'node-fetch';
 import { MessageAttachment } from 'discord.js';
 
-// Internal dependencies
 import htmlTemplate from '../templates/htmlTemplate';
 import { playerNotFound } from '../errors';
 import { allPlayers, specificPlayer } from '../apis';

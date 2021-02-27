@@ -1,7 +1,3 @@
-// TODO: remove?
-// Dotenv config
-require('dotenv').config();
-
 import Commands from '../models/commands';
 import { incrementCommand } from '../util/commands';
 import { connectionError } from '../errors/index';
