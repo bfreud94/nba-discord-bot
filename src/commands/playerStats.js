@@ -14,7 +14,12 @@ export const statsMap = {
     basicTotalStats2: ['fgm', 'fga', 'tpm', 'tpa', 'ftm', 'fta']
 };
 
-const playerStats = async ([ firstName, lastName], CMD_NAME) => {
+const getYear = (year, max) => {
+    if (year < 0 || !year || year <= 2020 - max || isNaN(year)) return 0;
+    return 2020 - year >= 0 ? 2020 - year : 0;
+};
+
+const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
     const playerName = getFullName(firstName, lastName).toLowerCase();
 
     const allPlayersResponse = await (await fetch(allPlayers)).json();
@@ -27,9 +32,11 @@ const playerStats = async ([ firstName, lastName], CMD_NAME) => {
 
         if (playerName === fullName.toLowerCase()) {
             const playerStats = await (await fetch(specificPlayer(personId))).json();
+            const playerSeasons = playerStats.league.standard.stats.regularSeason.season;
 
             const statsList = statsMap[CMD_NAME];
-            const stats = statsList.map((stat) => playerStats.league.standard.stats.regularSeason.season[0].total[stat]);
+            const yearIndex = getYear(year, playerSeasons.length);
+            const stats = statsList.map((stat) => playerSeasons[yearIndex].total[stat]);
 
             const _htmlTemplate = htmlTemplate(statsList, stats, fullName, CMD_NAME);
             const images = await createHTMLImage(_htmlTemplate);
