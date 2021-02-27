@@ -1,7 +1,5 @@
 import Commands from '../models/commands';
 
-export const includesCommand = (CMD_NAME) => Object.keys(commandArgsMap).includes(CMD_NAME);
-
 export const commandArgsMap = {
     basicStats: 'firstName lastName',
     advancedStats: 'firstName lastName',

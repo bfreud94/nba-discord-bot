@@ -4,10 +4,9 @@ require('dotenv').config();
 import { Client } from 'discord.js';
 import { connect } from 'mongoose';
 
-import { includesCommand } from './util/commands';
 import commands from './commands/index';
 import { missingPlayerName, parseMessageContent } from './util';
-import { missingPlayerNameArguments } from './errors/index';
+import { invalidCommand, missingPlayerNameArguments } from './errors/index';
 
 const client = new Client();
 const prefix = process.env.PREFIX;
@@ -19,8 +18,6 @@ client.on('message', async (message) => {
 
     const [CMD_NAME, ...args] = parseMessageContent(message, process.env.PREFIX);
 
-    if (!includesCommand(CMD_NAME)) return;
-
     const { help, playerStats, usage } = commands;
 
     switch(CMD_NAME) {
@@ -29,7 +26,6 @@ client.on('message', async (message) => {
         case 'basicTotalStats':
         case 'basicTotalStats2': {
             if (missingPlayerName(args)) {
-                // TODO: fix this!
                 const data = missingPlayerNameArguments;
                 message.channel.send(data);
             } else {
@@ -49,11 +45,11 @@ client.on('message', async (message) => {
             break;
         };
         default:
+            message.channel.send(invalidCommand);
             break;
     };
 });
 
-// Listening for reactions
 client.on('messageReactionAdd', (reaction) => {
     const { name } = reaction.emoji;
     switch (name) {
