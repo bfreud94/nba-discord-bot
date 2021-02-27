@@ -1,10 +1,10 @@
 import Commands from '../models/commands';
 
 export const commandArgsMap = {
-    basicStats: 'firstName lastName',
-    advancedStats: 'firstName lastName',
-    basicTotalStats: 'firstName lastName',
-    basicTotalStats2: 'firstName lastName',
+    basicStats: 'firstName lastName year',
+    advancedStats: 'firstName lastName year',
+    basicTotalStats: 'firstName lastName year',
+    basicTotalStats2: 'firstName lastName year',
     help: '',
     usage: ''
 };
