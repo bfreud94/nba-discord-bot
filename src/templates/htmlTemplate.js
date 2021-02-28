@@ -54,11 +54,9 @@ export const onePlayerHTMLTemplate = async (headers, values, playerName, statTyp
 };
 
 export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneName, playerOneTimeframe], [playerTwoStats, playerTwoName, playerTwoTimeframe], statType) => {
-    console.log(playerOneTimeframe)
     const headersHTML = getRows(headers, statType);
     const playerOneRows = getRows(playerOneStats, statType);
     const playerTwoRows = getRows(playerTwoStats, statType);
-    console.log(playerOneTimeframe)
     const _htmlTemplate = 
         `<!DOCTYPE html>
             <html lang='en'>

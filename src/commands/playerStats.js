@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { MessageAttachment } from 'discord.js';
+import { startCase } from 'lodash';
 
 import { playerNotFound } from '../errors';
 import { allPlayers, specificPlayer } from '../apis';
@@ -19,18 +20,16 @@ const getYear = (year, max) => {
     return 2020 - year >= 0 ? 2020 - year : 0;
 };
 
-export const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
-    const playerName = getFullName(firstName, lastName).toLowerCase();
-
+export const playerStats = async (name, year, CMD_NAME) => {
     const allPlayersResponse = await (await fetch(allPlayers)).json();
     const players = allPlayersResponse.league.standard;
 
     for (let player of players) {
 
         const { firstName, lastName, personId } = player;
-        const fullName = getFullName(firstName, lastName);
+        const fullName = getFullName(firstName, lastName).toLowerCase();
 
-        if (playerName === fullName.toLowerCase()) {
+        if (name === fullName) {
             const playerStatsResponse = await (await fetch(specificPlayer(personId))).json();
 
             const playerSeasonStats = playerStatsResponse.league.standard.stats.regularSeason.season;
@@ -54,9 +53,9 @@ export const playerStats = async ([firstName, lastName, year], CMD_NAME) => {
 };
 
 export const playerStatsImage = async ([firstName, lastName, year = 2020], CMD_NAME) => {
-    const { fullName, statNames, stats } = await playerStats([firstName, lastName, year], CMD_NAME);
+    const { fullName, statNames, stats } = await playerStats(getFullName(firstName, lastName).toLowerCase(), year, CMD_NAME);
     if (playerStats === playerNotFound) return playerNotFound;
-    const images = await onePlayerHTMLTemplate(statNames, stats, fullName, CMD_NAME, year);
+    const images = await onePlayerHTMLTemplate(statNames, stats, startCase(fullName), CMD_NAME, year);
     await incrementCommand(CMD_NAME);
     return new MessageAttachment(images, 'anything.jpg');
 };
