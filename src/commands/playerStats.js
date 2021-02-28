@@ -24,38 +24,35 @@ export const playerStats = async (name, year, CMD_NAME) => {
     const allPlayersResponse = await (await fetch(allPlayers)).json();
     const players = allPlayersResponse.league.standard;
 
-    for (let player of players) {
+    const player = players.filter(({ firstName, lastName }) => getFullName(firstName, lastName).toLowerCase() === name)[0];
 
-        const { firstName, lastName, personId } = player;
-        const fullName = getFullName(firstName, lastName).toLowerCase();
+    if (player) {
+        const { personId } = player;
+        const playerStatsResponse = await (await fetch(specificPlayer(personId))).json();
 
-        if (name === fullName) {
-            const playerStatsResponse = await (await fetch(specificPlayer(personId))).json();
+        const playerSeasonStats = playerStatsResponse.league.standard.stats.regularSeason.season;
 
-            const playerSeasonStats = playerStatsResponse.league.standard.stats.regularSeason.season;
+        const statNames = statsMap[CMD_NAME];
+        const yearIndex = getYear(year, playerSeasonStats.length);
 
-            const statNames = statsMap[CMD_NAME];
-            const yearIndex = getYear(year, playerSeasonStats.length);
-
-            const stats = statNames.map((stat) => (
-                year === 'career'
-                    ? playerStatsResponse.league.standard.stats.careerSummary[stat]
-                    : playerSeasonStats[yearIndex].total[stat]
-            ));
-            return {
-                fullName,
-                stats,
-                statNames
-            };
-        }
+        const stats = statNames.map((stat) => (
+            year === 'career'
+                ? playerStatsResponse.league.standard.stats.careerSummary[stat]
+                : playerSeasonStats[yearIndex].total[stat]
+        ));
+        return {
+            name,
+            stats,
+            statNames
+        };
     }
-    return playerNotFound;
+    return {};
 };
 
 export const playerStatsImage = async ([firstName, lastName, year = 2020], CMD_NAME) => {
-    const { fullName, statNames, stats } = await playerStats(getFullName(firstName, lastName).toLowerCase(), year, CMD_NAME);
-    if (playerStats === playerNotFound) return playerNotFound;
-    const images = await onePlayerHTMLTemplate(statNames, stats, startCase(fullName), CMD_NAME, year);
+    const { name, statNames, stats } = await playerStats(getFullName(firstName, lastName).toLowerCase(), year, CMD_NAME);
+    if (!(name && stats && statName)) return playerNotFound;
+    const images = await onePlayerHTMLTemplate(statNames, stats, startCase(name), CMD_NAME, year);
     await incrementCommand(CMD_NAME);
     return new MessageAttachment(images, 'anything.jpg');
 };
