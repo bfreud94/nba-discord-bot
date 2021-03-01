@@ -5,3 +5,5 @@ export const missingPlayerNameArguments = 'Error: Please provide a first name an
 export const connectionError = 'Error: Could not connect to database';
 
 export const invalidCommand = 'Error: Invalid command';
+
+export const basketballReferencePageNotFound = 'Page Not Found (404 error)';

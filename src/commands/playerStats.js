@@ -1,10 +1,12 @@
 import fetch from 'node-fetch';
 import { MessageAttachment } from 'discord.js';
 import { startCase } from 'lodash';
+import cheerio from 'cheerio';
 
-import { playerNotFound } from '../errors';
-import { allPlayers, specificPlayer } from '../apis';
-import { getFullName } from '../util';
+import { basketballReferencePageNotFound, playerNotFound } from '../errors';
+import { allPlayers, basketballReferencePage, specificPlayer } from '../apis';
+import { tableLocationMap } from '../util/basketballReference';
+import { getFullName, splitName } from '../util';
 import { incrementCommand } from '../util/commands';
 import { onePlayerHTMLTemplate } from '../templates/htmlTemplate';
 
@@ -25,7 +27,6 @@ export const playerStats = async (name, year, CMD_NAME) => {
     const players = allPlayersResponse.league.standard;
 
     const player = players.filter(({ firstName, lastName }) => getFullName(firstName, lastName).toLowerCase() === name)[0];
-
     if (player) {
         const { personId } = player;
         const playerStatsResponse = await (await fetch(specificPlayer(personId))).json();
@@ -45,14 +46,36 @@ export const playerStats = async (name, year, CMD_NAME) => {
             stats,
             statNames
         };
+    } else {
+        const { firstName, lastName } = splitName(name);
+        const page = await (await fetch(basketballReferencePage(firstName, lastName))).text();
+        if (page.includes(basketballReferencePageNotFound)) return {};
+        const $ = cheerio.load(page);
+
+        const tableBody = $('#all_per_game tbody').children('tr');
+        const specifiedYear = tableBody.filter((index, child) => index === 0 ? false : $(child).children().get(0).firstChild.firstChild.data.split('-')[0] === year);
+
+        if (specifiedYear.length !== 0) {
+            return {
+                name,
+                stats: tableLocationMap[CMD_NAME].map((index) => specifiedYear.children().get(index).firstChild.data),
+                statNames: statsMap[CMD_NAME]
+            };
+        } else {
+            return {
+                name,
+                stats: tableLocationMap[CMD_NAME].map((index) => tableBody.get(tableBody.length - 1).children[index].firstChild.data),
+                statNames: statsMap[CMD_NAME],
+                lastYear: tableBody.get(tableBody.length - 1).children[0].firstChild.firstChild.data.split('-')[0]
+            };
+        }
     }
-    return {};
 };
 
 export const playerStatsImage = async ([firstName, lastName, year = 2020], CMD_NAME) => {
-    const { name, statNames, stats } = await playerStats(getFullName(firstName, lastName).toLowerCase(), year, CMD_NAME);
-    if (!(name && stats && statName)) return playerNotFound;
-    const images = await onePlayerHTMLTemplate(statNames, stats, startCase(name), CMD_NAME, year);
+    const { name, statNames, stats, lastYear } = await playerStats(getFullName(firstName, lastName).toLowerCase(), year, CMD_NAME);
+    if (!(name && stats && statNames)) return playerNotFound;
+    const images = await onePlayerHTMLTemplate(statNames, stats, startCase(name), CMD_NAME, lastYear ? lastYear : year);
     await incrementCommand(CMD_NAME);
     return new MessageAttachment(images, 'anything.jpg');
 };
