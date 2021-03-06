@@ -25,13 +25,8 @@ client.on('message', async (message) => {
         case 'basicStats':
         case 'basicTotalStats':
         case 'basicTotalStats2': {
-            if (missingPlayerName(args)) {
-                const data = missingPlayerNameArguments;
-                message.channel.send(data);
-            } else {
-                const data = await playerStatsImage(args, CMD_NAME);
-                message.channel.send(data);
-            }
+            const data = missingPlayerName(args) ? missingPlayerNameArguments : await playerStatsImage(args, CMD_NAME);
+            message.channel.send(data);
             break;
         };
         case 'help': {
