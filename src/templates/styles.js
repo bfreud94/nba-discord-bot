@@ -4,7 +4,7 @@ export default () => (
         color: #fff;
         font-family: "Poppins", Arial, Helvetica, sans-serif;
         font-size: 22px;
-        max-width: 600px;
+        width: 600px;
     }
     .app {
         align-items: center;
@@ -17,5 +17,6 @@ export default () => (
     .tableRow {
         padding: 0px 30px 0px 0px;
         text-align: left;
+        width: 80px;
     }`
 );
