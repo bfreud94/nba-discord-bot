@@ -43,6 +43,10 @@ const getSpecifiedYearData = (specifiedYear, index) => {
     const tableCell = specifiedYear.children().get(index + 5);
     if (specifiedYear.children().length <= index + 5) return '';
     if (!specifiedYear.children().get(index + 5).firstChild) return '';
+    const isStrong = specifiedYear.children().get(index + 5).firstChild.name === 'strong'
+    if (isStrong) {
+        return specifiedYear.children().get(index + 5).firstChild.children[0].data;
+    }
     return tableCell
         ? specifiedYear.children().get(index + 5).firstChild.data
         : specifiedYear.children().get(index + 5).firstChild.firstChild.data;
@@ -72,21 +76,17 @@ export const getTableData = (page, year, CMD_NAME) => {
     const statNames = !exceptions.includes(CMD_NAME)
         ? getStatNames($, tableHeader).filter((index, statName) => statName.trim() !== '')
         : getStatNamesExceptions($, tableHeader).filter((statName) => statName.trim() !== '');
+    
+    const stats = statNames.map((child, index) => (getSpecifiedYearData(
+        specifiedYearTableData,
+        !exceptions.includes(CMD_NAME)
+            ? child
+            : index
+        )));
 
     return {
         actualYearString,
-        stats: statNames.map((child, index) => (getSpecifiedYearData(
-            specifiedYearTableData,
-            !exceptions.includes(CMD_NAME)
-                ? child
-                : index
-            )))
-            .filter((index, value) => {
-                if (!index || !value) return false;
-                return !exceptions.includes(CMD_NAME)
-                    ? value.trim() !== ''
-                    : index.trim() !== ''
-            }),
+        stats,
         statNames
     };
 };
