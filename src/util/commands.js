@@ -17,16 +17,16 @@ export const commandArgsMap = {
 };
 
 export const commandTableHtmlSubstringMap = {
-    perGame: '<table class=\"row_summable sortable stats_table\" id=\"per_game\"',
-    totals: '<table class=\"row_summable sortable stats_table\" id=\"totals\"',
-    per36min: '<table class=\"row_summable sortable stats_table\" id=\"per_minute\"',
-    per100poss: '<table class=\"row_summable sortable stats_table\" id=\"per_poss\"',
-    advanced: '<table class=\"row_summable sortable stats_table\" id=\"advanced\"',
-    adjustedshooting: '<table class=\"row_summable sortable stats_table\" id=\"adj_shooting\"',
-    shooting: '<table class=\"row_summable sortable stats_table\" id=\"shooting\"',
-    playbyplay: '<table class=\"row_summable sortable stats_table\" id=\"pbp\"',
-    gamehigh: '<table class=\"sortable stats_table\" id=\"game_highs\"',
-    collegestats: '<table class=\"sortable stats_table\" id=\"all_college_stats\"'
+    pergame: '<div id="all_per_game-playoffs_per_game"',
+    totals: '<div class="table_container current" id="div_totals">',
+    per36min: '<div class="table_container current" id="div_per_minute">',
+    per100poss: '<div class="table_container current" id="div_per_poss">',
+    advanced: '<div class="table_container current" id="div_advanced">',
+    adjustedshooting: '<div class="table_container current" id="div_adj_shooting">',
+    shooting: '<div class="table_container current" id="div_shooting">',
+    playbyplay: '<div class="table_container current" id="div_pbp">',
+    gamehigh: '<div class="table_container current is_setup" id="div_highs-reg-season">',
+    collegestats: '<div class="table_container" id="div_all_college_stats">'
 };
 
 export const commandDisplayMap = {
