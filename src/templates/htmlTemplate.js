@@ -1,19 +1,19 @@
 import styles from './styles';
 import nodeHtmlToImage from 'node-html-to-image';
-import { commandDisplayMap, exceptions } from '../util/commands';
+import { commandDisplayMap, multipleHeaders } from '../util/commands';
 
 const getHeaders = (values, CMD_NAME) => {
     let headersHTML = '';
-    values.map((index) => {
-        headersHTML += `<th class='tableRow'>${!exceptions.includes(CMD_NAME) ? values[index] : index}</th>`;
+    values.forEach(header => {
+        headersHTML += `<th class='tableRow'>${header}</th>`;
     });
     return headersHTML;
 };
 
 const getRows = (rows, CMD_NAME) => {
     let rowsHTML = '';
-    rows.map((index) => {
-        rowsHTML += `<th class='tableRow'>${!exceptions.includes(CMD_NAME) ? rows[index] : index}</th>`;
+    rows.forEach((_, index) => {
+        rowsHTML += `<th class='tableRow'>${!multipleHeaders.includes(CMD_NAME) ? rows[index] : index}</th>`;
     });
     return rowsHTML;
 };
@@ -31,7 +31,7 @@ const getYearString = (year) => (
 );
 
 const partialTables = (headers, rows, CMD_NAME) => {
-    const testHeaders = {
+    const slicedHeaders = {
         0: headers.slice(0, 5),
         1: headers.slice(5, 10),
         2: headers.slice(10, 15),
@@ -39,7 +39,7 @@ const partialTables = (headers, rows, CMD_NAME) => {
         4: headers.slice(20, 25),
         5: headers.slice(25, 30)
     };
-    const testRows = {
+    const slicedRows = {
         0: rows.slice(0, 5),
         1: rows.slice(5, 10),
         2: rows.slice(10, 15),
@@ -48,11 +48,11 @@ const partialTables = (headers, rows, CMD_NAME) => {
         5: rows.slice(25, 30)
     };
     let html = '';
-    Object.keys(testHeaders).forEach((index) => {
+    Object.keys(slicedHeaders).forEach((index) => {
         html += (`
             <table>
-                <tr>${getHeaders(testHeaders[index], CMD_NAME)}</tr>
-                <tr>${getRows(testRows[index], CMD_NAME)}</tr>
+                <tr>${getHeaders(slicedHeaders[index], CMD_NAME)}</tr>
+                <tr>${getRows(slicedRows[index])}</tr>
             </table>
             <br />
         `);
@@ -92,10 +92,7 @@ export const onePlayerHTMLTemplate = async (headers, rows, playerName, year, CMD
     return image;
 };
 
-export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneName, playerOneTimeframe], [playerTwoStats, playerTwoName, playerTwoTimeframe], statType, CMD_NAME) => {
-    const headersHTML = getRows(headers, statType);
-    const playerOneRows = getRows(playerOneStats, statType);
-    const playerTwoRows = getRows(playerTwoStats, statType);
+export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneName, playerOneTimeframe], [playerTwoStats, playerTwoName, playerTwoTimeframe], CMD_NAME) => {
     const _htmlTemplate = 
         `<!DOCTYPE html>
             <html lang='en'>
@@ -109,13 +106,11 @@ export const twoPlayerHTMLTemplate = async (headers, [playerOneStats, playerOneN
                     <div class='app'>
                         <h4>${playerOneName} ${commandDisplayMap[CMD_NAME]} (${playerOneTimeframe}-${parseInt(playerOneTimeframe) + 1})</h4>
                         <table>
-                            <tr>${headersHTML}</tr>
-                            <tr>${playerOneRows}</tr>
+                            <tr>${partialTables(headers, playerOneStats, CMD_NAME)}</tr>
                         </table>
                         <h4>${playerTwoName} ${commandDisplayMap[CMD_NAME]} (${playerTwoTimeframe}-${parseInt(playerTwoTimeframe) + 1})</h4>
                         <table>
-                            <tr>${headersHTML}</tr>
-                            <tr>${playerTwoRows}</tr>
+                            <tr>${partialTables(headers, playerTwoStats, CMD_NAME)}</tr>
                         </table>
                     </div>
                 </body>

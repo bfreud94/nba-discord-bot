@@ -5,7 +5,7 @@ import { Client } from 'discord.js';
 import { connect } from 'mongoose';
 
 import commands from './commands/index';
-import { parseMessageContent } from './util';
+import { parseMessageContent, reformatArgs } from './util';
 import { invalidCommand, getInputErrors, isValidMessage } from './errors/index';
 
 const client = new Client();
@@ -28,8 +28,7 @@ client.on('message', async (message) => {
         case 'adjustedshooting':
         case 'shooting':
         case 'playbyplay':
-        case 'gamehigh':
-        case 'collegestats': {
+        case 'gamehigh': {
             const errors = getInputErrors(args);
             const data = !errors ? await playerStatsImage(args, CMD_NAME.toLowerCase()) : errors;
             message.channel.send(data);
@@ -45,8 +44,9 @@ client.on('message', async (message) => {
             message.channel.send(data);
             break;
         };
-        case 'compare': {
-            const data = await compare(args, CMD_NAME.toLowerCase());
+        case 'comparetotals':
+        case 'comparepergame': {
+            const data = await compare(reformatArgs(args), CMD_NAME.split('compare')[1].toLowerCase());
             message.channel.send(data);
             break;
         }
@@ -56,7 +56,6 @@ client.on('message', async (message) => {
     };
 });
 
-// Connecting to the Database
 connect(`${process.env.DB_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
     // eslint-disable-next-line no-console
     console.log('Connected to Database');

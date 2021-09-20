@@ -8,12 +8,12 @@ export const commandArgsMap = {
     advanced: 'firstName lastName timeframe',
     adjustedshooting: 'firstName lastName timeframe',
     shooting: 'firstName lastName timeframe',
-    playByplay: 'firstName lastName timeframe',
+    playbyplay: 'firstName lastName timeframe',
     gamehigh: 'firstName lastName timeframe',
-    collegestats: 'firstName lastName timeframe',
     help: '',
     usage: '',
-    compare: 'playerOneFirstName playerOneLastName playerTwoFirstName playerTwoLastName playerOneTimeFrame playerTwoTimeFrame'
+    comparetotals: 'playerOneFirstName playerOneLastName playerOneTimeFrame playerTwoFirstName playerTwoLastName playerTwoTimeFrame',
+    comparepergame: 'playerOneFirstName playerOneLastName playerOneTimeFrame playerTwoFirstName playerTwoLastName playerTwoTimeFrame',
 };
 
 export const commandTableHtmlSubstringMap = {
@@ -25,8 +25,7 @@ export const commandTableHtmlSubstringMap = {
     adjustedshooting: '<div class="table_container current" id="div_adj_shooting">',
     shooting: '<div class="table_container current" id="div_shooting">',
     playbyplay: '<div class="table_container current" id="div_pbp">',
-    gamehigh: '<div class="table_container current is_setup" id="div_highs-reg-season">',
-    collegestats: '<div class="table_container" id="div_all_college_stats">'
+    gamehigh: '<div class="table_container current" id="div_highs-reg-season">'
 };
 
 export const commandDisplayMap = {
@@ -38,13 +37,24 @@ export const commandDisplayMap = {
     adjustedshooting: 'Adjusted Shooting',
     shooting: 'Shooting',
     playbyplay: 'Play-by-play',
-    gamehigh: 'Game Highs',
-    collegestats: 'College Stats'
+    gamehigh: 'Game Highs'
 };
+
+export const commandTypedToRowElementMap = {
+    totals: 'totals',
+    pergame: 'per_game',
+    per36min: 'per_minute',
+    per100poss: 'per_poss',
+    advanced: 'advanced',
+    adjustedshooting: 'adj_shooting',
+    playbyplay: 'pbp',
+    shooting: 'shooting',
+    gamehigh: ''
+}
 
 export const incrementCommand = async (name) => {
     const query = { name };
     await Commands.findOneAndUpdate(query, {$inc : {'invocations' : 1}}, { useFindAndModify: false });
 };
 
-export const exceptions = ['adjustedshooting', 'shooting', 'playByplay', 'gamehigh', 'collegestats'];
+export const multipleHeaders = ['adjustedshooting', 'shooting', 'playbyplay'];

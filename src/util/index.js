@@ -12,11 +12,28 @@ export const splitName = (name) => ({
     lastName: name.split(' ')[1]
 });
 
-export const commandAbbreviations = {
-    min: 'MIN',
-    points: 'PTS',
-    totReb: 'REB',
-    assists: 'AST',
-    steals: 'STL',
-    blocks:'BLK'
-};
+export const getStatName = (command, statName, i) => {
+    if (command === 'adjustedshooting' && i > 1 && i < 18) return statName + i;
+    if (command === 'playbyplay' && i > 10 && i < 15) return statName + i;
+    if (command === 'shooting') return statName + i;
+    return statName;
+}
+
+export const reformatArgs = (args) => {
+    if (args.length === 4) {
+        args.splice(2, 0, 10000)
+        args.push(10000)
+    } else if (args.length === 5) {
+        const firstPlayerHasYear = parseInt(args[2])
+        if (firstPlayerHasYear) {
+            args.push(10000)
+        } else {
+            args.splice(2, 0, 10000)
+        }
+    }
+    return args;
+}
+
+export const isGameHigh = (CMD_NAME) => CMD_NAME === 'gamehigh'
+
+export const getFullCompareCommandName = (CMD_NAME) => 'compare' + CMD_NAME

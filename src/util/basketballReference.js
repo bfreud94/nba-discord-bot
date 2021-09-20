@@ -1,11 +1,51 @@
 import cheerio from 'cheerio';
-import { commandTableHtmlSubstringMap, exceptions } from './commands';
+import { commandTableHtmlSubstringMap, commandTypedToRowElementMap, multipleHeaders } from './commands';
+import { getDataAttribute } from './attributeMaps'
 import { getTable } from './html';
+import { getStatName, isGameHigh } from './index'
+
+export const getTableData = (page, year, CMD_NAME) => {
+    const parsedPage = getTable(page, commandTableHtmlSubstringMap[CMD_NAME]);
+    const $ = cheerio.load(parsedPage);
+
+    const tableHeader = getTableHeader($, CMD_NAME);
+    const tableBody = $(`tbody`).children('tr');
+
+    const firstYear = getFirstYear(tableBody);
+    const lastYear = getLastYear(tableBody);
+
+    const actualYearString = getActualYear(
+        firstYear,
+        lastYear,
+        year
+    );
+
+    const yearData = {
+        actualYearString,
+        firstYear,
+        lastYear,
+        difference: parseInt(actualYearString) - parseInt(firstYear)
+    }
+
+    const statNames = getHeaderStatNames($, CMD_NAME, tableHeader)
+
+    const stats = getStats($, CMD_NAME, yearData, statNames);
+
+    return {
+        actualYearString,
+        stats,
+        statNames
+    };
+};
+
+const getTableHeader = ($, CMD_NAME) => !multipleHeaders.includes(CMD_NAME)
+    ? $(`thead`).children('tr')
+    : $(`thead`).children('tr').get(1).children.filter((_, index) => index % 2 === 1);
 
 const getActualYear = (firstYear, lastYear, year) => {
     if (!year) return lastYear;
     if (year < firstYear) return firstYear;
-    if (year > lastYear) return lastYear; 
+    if (year > lastYear) return lastYear;
     return year;
 }
 
@@ -20,73 +60,63 @@ const getLastYear = (tableBody, index = 0) => (
         : getLastYear(tableBody, index + 1)
 );
 
-const getStatNames = ($, header) => (
-    header.children()
-    .map((index, child) => ($(child).get(0).firstChild
-        ? $(child).get(0).firstChild.data
-        : ''
-    ))
-    .slice(5)
-);
-
-const getStatNamesExceptions = ($, header) => (
-    header
-    .map((child, index) => {
-        return header[index]
-            ? header[index].children[0].data
+const getHeaderStatNames = ($, CMD_NAME, tableHeader) => {
+    const getHeaderStatNamesSingleHeader = ($, tableHeader) => (
+        tableHeader.children()
+        .map((_, child) => ($(child).get(0).firstChild
+            ? $(child).get(0).firstChild.data
             : ''
-    })
-    .slice(5)
-);
-
-const getSpecifiedYearData = (specifiedYear, index) => {
-    const tableCell = specifiedYear.children().get(index + 5);
-    if (specifiedYear.children().length <= index + 5) return '';
-    if (!specifiedYear.children().get(index + 5).firstChild) return '';
-    const isStrong = specifiedYear.children().get(index + 5).firstChild.name === 'strong'
-    if (isStrong) {
-        return specifiedYear.children().get(index + 5).firstChild.children[0].data;
+        ))
+        .slice(5)
+    );
+    
+    const getHeaderStatNamesMultipleHeaders = ($, tableHeader) => (
+        tableHeader
+        .map((_, index) => {
+            return tableHeader[index]
+                ? tableHeader[index].children[0].data
+                : ''
+        })
+        .slice(5)
+    );
+    const rawStatNames = !multipleHeaders.includes(CMD_NAME)
+        ? getHeaderStatNamesSingleHeader($, tableHeader).filter((_, statName) => statName.trim() !== '')
+        : getHeaderStatNamesMultipleHeaders($, tableHeader).filter((statName) => statName.trim() !== '');
+    
+    const statNames = []
+    for (let i = 0; i < rawStatNames.length; i++) {
+        statNames.push(rawStatNames[i])
     }
-    return tableCell
-        ? specifiedYear.children().get(index + 5).firstChild.data
-        : specifiedYear.children().get(index + 5).firstChild.firstChild.data;
+    return statNames
 };
 
-export const getTableData = (page, year, CMD_NAME) => {
-    const parsedPage = getTable(page, commandTableHtmlSubstringMap[CMD_NAME]);
-    const $ = cheerio.load(parsedPage);
+const getElement = ($, CMD_NAME, yearAttribute, attribute, difference, index) => isGameHigh(CMD_NAME)
+    ? $('tbody > tr')[difference].children[index + 4]
+    : $(`[id="${commandTypedToRowElementMap[CMD_NAME]}.${yearAttribute}"] > [data-stat="${attribute}"]`)[0].children[0]
 
-    const tableHeader = !exceptions.includes(CMD_NAME)
-        ? $(`thead`).children('tr')
-        : $(`thead`).children('tr').get(1).children.filter((child, index) => index % 2 === 1);
-    const tableBody = $(`tbody`).children('tr');
+const formatElement = (element, CMD_NAME) => {
+    if (!element) {
+        return 0
+    } else if(isGameHigh(CMD_NAME)) {
+        return element.children[0].children[0].data;
+    } else {
+        const isStrong = element.name === 'strong'
+        const data = isStrong
+            ? element.children[0].data
+            : element.data
+        return data;
+    }
+}
 
-    const actualYearString = getActualYear(
-        getFirstYear(tableBody),
-        getLastYear(tableBody),
-        year
-    );
-
-    const specifiedYearTableData = tableBody.filter((index, child) => (
-        !$(child).children().get(0).firstChild.firstChild
-            ? $(child).children().get(0).firstChild.data.split('-')[0] === actualYearString
-            : $(child).children().get(0).firstChild.firstChild.data.split('-')[0] === actualYearString
-    ));
-
-    const statNames = !exceptions.includes(CMD_NAME)
-        ? getStatNames($, tableHeader).filter((index, statName) => statName.trim() !== '')
-        : getStatNamesExceptions($, tableHeader).filter((statName) => statName.trim() !== '');
-    
-    const stats = statNames.map((child, index) => (getSpecifiedYearData(
-        specifiedYearTableData,
-        !exceptions.includes(CMD_NAME)
-            ? child
-            : index
-        )));
-
-    return {
-        actualYearString,
-        stats,
-        statNames
-    };
+const getStats = ($, CMD_NAME, { actualYearString, difference }, statNames) => {
+    const stats = [];
+    const yearAttribute = (parseInt(actualYearString) + 1).toString();
+    for (let i = 0; i < statNames.length; i++) {
+        const statName = getStatName(CMD_NAME, statNames[i], i)
+        const attribute = getDataAttribute(statName, CMD_NAME)
+        const element = getElement($, CMD_NAME, yearAttribute, attribute, difference, i);
+        const formattedElement = formatElement(element, CMD_NAME);
+        stats.push(formattedElement);
+    }
+    return stats;
 };
