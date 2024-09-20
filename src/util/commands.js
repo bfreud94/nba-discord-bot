@@ -18,14 +18,14 @@ export const commandArgsMap = {
 
 export const commandTableHtmlSubstringMap = {
     pergame: '<div id="all_per_game-playoffs_per_game"',
-    totals: '<div class="table_container current" id="div_totals">',
-    per36min: '<div class="table_container current" id="div_per_minute">',
-    per100poss: '<div class="table_container current" id="div_per_poss">',
-    advanced: '<div class="table_container current" id="div_advanced">',
-    adjustedshooting: '<div class="table_container current" id="div_adj_shooting">',
-    shooting: '<div class="table_container current" id="div_shooting">',
-    playbyplay: '<div class="table_container current" id="div_pbp">',
-    gamehigh: '<div class="table_container current" id="div_highs-reg-season">'
+    totals: '<div id="all_totals-playoffs_totals"',
+    per36min: '<div id="switcher_per_minute-playoffs_per_minute"',
+    per100poss: 'switcher_per_poss-playoffs_per_poss',
+    advanced: 'switcher_advanced-playoffs_advanced',
+    adjustedshooting: 'div_adj_shooting',
+    shooting: 'div_shooting',
+    playbyplay: 'pbp_sh',
+    gamehigh: 'highs-reg-season_sh'
 };
 
 export const commandDisplayMap = {

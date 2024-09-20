@@ -1,10 +1,10 @@
-export default () => (
+export default (CMD_NAME) => (
     `body {
         background: rgb(22, 22, 22);
         color: #fff;
         font-family: "Poppins", Arial, Helvetica, sans-serif;
-        font-size: 22px;
-        width: 600px;
+        font-size: ${CMD_NAME === 'shooting' ? '18px' : '28px'};
+        width: 725px;
     }
     .app {
         align-items: center;
@@ -17,6 +17,10 @@ export default () => (
     .tableRow {
         padding: 0px 30px 0px 0px;
         text-align: left;
-        width: 80px;
-    }`
+        width: 100px;
+    }
+    .table {
+        width: 700px;
+    }
+    `
 );

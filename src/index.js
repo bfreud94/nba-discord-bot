@@ -19,6 +19,7 @@ client.on('message', async (message) => {
     const [CMD_NAME, ...args] = parseMessageContent(message, process.env.PREFIX);
 
     const { compare, help, playerStatsImage, usage } = commands;
+
     switch(CMD_NAME.toLowerCase()) {
         case 'pergame':
         case 'totals':
@@ -56,7 +57,5 @@ client.on('message', async (message) => {
     };
 });
 
-connect(`${process.env.DB_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
-    // eslint-disable-next-line no-console
-    console.log('Connected to Database');
-});
+connect(`${process.env.DB_CONNECTION}`)
+	.then(() => console.log('Connected to Database'));
