@@ -43,7 +43,7 @@ const totalDataAttributeMap = {
     TOV: 'tov',
     PF: 'pf',
     PTS: 'pts',
-    'Trp Dbl': 'trp_dbl'
+    'Trp-Dbl': 'trp_dbl'
 }
 
 const perGameDataAttributeMap = {
@@ -235,6 +235,33 @@ const shootingDataAttributeMap = {
     'Att.22': 'fg3a_heave',
     '#23': 'fg3_heave',
 };
+
+export const shootingModifiedStatNames = [
+    'G',
+    'MP',
+    'FG%',
+    'Dist.',
+    'FGA% 2P',
+    'FGA% 0-3',
+    'FGA% 3-10',
+    'FGA% 10-16',
+    'FGA% 16-3P',
+    'FGA% 3P',
+    'FG% 2P',
+    'FG% 0-3',
+    'FG% 3-10',
+    'FG% 10-16',
+    'FG% 16-3P',
+    'FG% 3P',
+    '% Ast\'d 2P',
+    '% Ast\'d 3P',
+    '%FGA Dunk',
+    'Dunks Made',
+    '%3PA Corner 3',
+    '3P% Corner 3',
+    'Att. Heave',
+    'Heaves Made'
+];
 
 const gameHighAttributeMap = {
     'MP': 'time_on_court',

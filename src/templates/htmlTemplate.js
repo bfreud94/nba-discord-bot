@@ -2,7 +2,7 @@ import styles from './styles';
 import nodeHtmlToImage from 'node-html-to-image';
 import { commandDisplayMap, multipleHeaders } from '../util/commands';
 
-const getHeaders = (values, CMD_NAME) => {
+const getHeaders = (values) => {
     let headersHTML = '';
     values.forEach(header => {
         headersHTML += `<th class='tableRow'>${header}</th>`;
@@ -30,7 +30,7 @@ const getYearString = (year) => (
         : `${year}-${parseInt(year) + 1}`
 );
 
-const partialTables = (headers, rows, CMD_NAME) => {
+const partialTables = (headers, rows) => {
     const slicedHeaders = {
         0: headers.slice(0, 5),
         1: headers.slice(5, 10),
@@ -50,8 +50,8 @@ const partialTables = (headers, rows, CMD_NAME) => {
     let html = '';
     Object.keys(slicedHeaders).forEach((index) => {
         html += (`
-            <table>
-                <tr>${getHeaders(slicedHeaders[index], CMD_NAME)}</tr>
+            <table class='table'>
+                <tr>${getHeaders(slicedHeaders[index])}</tr>
                 <tr>${getRows(slicedRows[index])}</tr>
             </table>
             <br />
@@ -67,13 +67,13 @@ export const onePlayerHTMLTemplate = async (headers, rows, playerName, year, CMD
             <head>
                 ${metaTags()}
                 <style>
-                    ${styles()}
+                    ${styles(CMD_NAME)}
                 </style>
             </head>
             <body>
                 <div class='app'>
                     <h4>${playerName} ${commandDisplayMap[CMD_NAME]} (${getYearString(year)})</h4>
-                    ${partialTables(headers, rows, CMD_NAME)}
+                    ${partialTables(headers, rows)}
                 </div>
             </body>
         </html>`;

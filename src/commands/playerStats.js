@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 import { MessageAttachment } from 'discord.js';
-import { startCase } from 'lodash';
-
+import { capitalize } from 'lodash';
 import { basketballReferencePageNotFound, playerNotFound } from '../errors';
 import { basketballReferencePage } from '../apis';
 import { getTableData } from '../util/basketballReference';
@@ -15,27 +14,35 @@ export const playerStats = async (name, year, CMD_NAME) => {
     const page = await (await fetch(basketballReferencePage(firstName, lastName))).text();
     if (page.includes(basketballReferencePageNotFound)) return {};
 
-    const { stats, statNames, actualYearString } = getTableData(page, year, CMD_NAME);
+    const { stats, statNames, actualYearString, error } = getTableData(page, year, CMD_NAME, name);
 
     return {
         name,
         stats,
         statNames,
-        actualYearString
+        actualYearString,
+        error
     };
 };
 
 export const playerStatsImage = async ([firstName, lastName, year], CMD_NAME) => {
-    const { name, statNames, stats, actualYearString } = await playerStats(
+    const { name, statNames, stats, actualYearString, error } = await playerStats(
         getFullName(firstName, lastName).toLowerCase(),
         year,
         CMD_NAME
     );
 
+    if (error) {
+        return error;
+    }
+ 
     if (!(name && stats && statNames)) return playerNotFound;
 
-    const images = await onePlayerHTMLTemplate(statNames, stats, startCase(name), actualYearString, CMD_NAME);
+    const formattedName = name.replace(/\w+/g, capitalize);
+
+    const images = await onePlayerHTMLTemplate(statNames, stats, formattedName, actualYearString, CMD_NAME);
     
     await incrementCommand(CMD_NAME);
-    return new MessageAttachment(images, 'anything.jpg');
+
+    return new MessageAttachment(images, `${name}-${CMD_NAME}.png`);
 };
