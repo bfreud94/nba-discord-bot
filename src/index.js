@@ -1,14 +1,14 @@
 // Dotenv config
 require('dotenv').config();
 
-import { Client } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import { connect } from 'mongoose';
 
 import commands from './commands/index';
 import { parseMessageContent, reformatArgs } from './util';
 import { invalidCommand, getInputErrors, isValidMessage } from './errors/index';
 
-const client = new Client();
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 const prefix = process.env.PREFIX;
 
 client.login(process.env.DISCORD_BOT_TOKEN);

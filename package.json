@@ -15,7 +15,7 @@
     "@babel/node": "^7.13.0",
     "@babel/preset-env": "^7.13.5",
     "cheerio": "^1.0.0-rc.5",
-    "discord.js": "^12.5.1",
+    "discord.js": "^14.16.2",
     "dotenv": "^8.2.0",
     "eslint": "^7.20.0",
     "htmlparser2": "^6.0.1",
